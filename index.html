@@ -48,11 +48,17 @@
       pointer-events: none;
     }
 
-    /* ── Enlace al calendario (top-left) ── */
-    .nav-back {
+    /* ── Enlaces superiores (top-left): calendario + compatibilidad ── */
+    .nav-links {
       position: absolute;
       top: 1rem;
       left: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .nav-back {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -62,6 +68,10 @@
       transition: color 0.15s;
     }
     .nav-back:hover { color: var(--text); }
+    .nav-sep {
+      color: var(--border-hover);
+      font-size: 13px;
+    }
 
     /* ── Pre-header: redes, Epic, Eneba ── */
     .pre-header {
@@ -523,10 +533,17 @@
 
   <div id="visit-counter" class="visit-counter"></div>
 
-  <a href="https://varsynn.github.io/calendario/" class="nav-back" target="_self">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-    Calendario de lanzamientos
-  </a>
+  <div class="nav-links">
+    <a href="https://varsynn.github.io/calendario/" class="nav-back" target="_self">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Calendario de lanzamientos
+    </a>
+    <span class="nav-sep">·</span>
+    <a href="https://varsynn.github.io/juegos-compatibles-con-mi-PC/" class="nav-back" target="_self">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      ¿Qué juego es compatible con mi PC?
+    </a>
+  </div>
 
   <div class="pre-header">
     <div class="social-links">
@@ -1074,8 +1091,8 @@
       </div>`;
   }
 
-  // Contador de visitas — namespace propio para no mezclar con /calendario
-  fetch('https://api.counterapi.dev/v1/ofertasspeedrun/hardware/up')
+  // Contador de visitas — namespace propio "buscador", independiente de /hardware y /calendario
+  fetch('https://api.counterapi.dev/v1/ofertasspeedrun/buscador/up')
     .then(res => res.json())
     .then(data => {
       const val = data.count ?? data.value ?? null;
