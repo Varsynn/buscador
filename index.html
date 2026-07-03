@@ -844,7 +844,7 @@
   };
 
   const GPU_TIERS = {
-    'gtx-1050': 1, 'gtx-1060': 2, 'gtx-1070': 3, 'gtx-1080': 4,
+    'gtx-1050': 1, 'gtx-1060': 2, 'gtx-1070': 3, 'gtx-1080': 3,
     'gtx-1650': 2, 'gtx-1660': 3,
     'rtx-2060': 3, 'rtx-2070': 4,
     'rtx-3060': 5, 'rtx-3070': 6, 'rtx-3080': 7,
@@ -852,8 +852,8 @@
     'rtx-5070': 6, 'rtx-5080': 9,
     'rx-580': 1,
     'rx-5700': 3,
-    'rx-6600': 4, 'rx-6700': 5, 'rx-6800': 7, 'rx-6900': 7,
-    'rx-7700': 4, 'rx-7800': 6, 'rx-7900': 8,
+    'rx-6600': 4, 'rx-6700': 5, 'rx-6800': 6, 'rx-6900': 7,
+    'rx-7700': 5, 'rx-7800': 6, 'rx-7900': 8,
     'rx-9070': 6,
     'integrada': 1,
     'rdna2-apu': 2,
@@ -1011,20 +1011,25 @@
   });
 
   /* ── Renderizado ── */
-  function genreName(g) {
+    function genreName(g) {
     const map = {
       action:'Acción', adventure:'Aventura', arpg:'ARPG',
-      battleroyale:'Battle Royale', casual:'Casual', citybuilder:'City Builder',
-      early_access:'Acceso anticipado', extraction:'Extraction Shooter',
-      fantasy:'Fantasía', fighting:'Lucha', fps:'FPS', gacha:'Gacha', horror:'Terror',
-      indie:'Indie', jrpg:'JRPG', metroidvania:'Metroidvania',
-      mmo:'MMO', moba:'MOBA', openworld:'Mundo abierto',
-      platformer:'Plataformas', puzzle:'Puzle', racing:'Carreras',
-      roguelite:'Roguelite', rpg:'RPG', rts:'RTS',
+      battleroyale:'Battle Royale', beatemup:"Beat 'em Up",
+      cardgame:'Juego de cartas', casual:'Casual',
+      citybuilder:'City Builder', early_access:'Acceso anticipado',
+      extraction:'Extraction Shooter', fantasy:'Fantasía', fighting:'Lucha',
+      fps:'FPS', gacha:'Gacha', horror:'Terror', indie:'Indie',
+      jrpg:'JRPG', metroidvania:'Metroidvania', mmo:'MMO', moba:'MOBA',
+      openworld:'Mundo abierto', platformer:'Plataformas', puzzle:'Puzle',
+      racing:'Carreras', rhythm:'Ritmo', roguelite:'Roguelite', rpg:'RPG', rts:'RTS',
       sandbox:'Sandbox', scifi:'Ciencia ficción', simulation:'Simulación',
-      soulslike:'Soulslike', sports:'Deportes', strategy:'Estrategia',
-      survival:'Supervivencia', visualnovel:'Novela visual'
+      soulslike:'Soulslike', sports:'Deportes', stealth:'Sigilo',
+      strategy:'Estrategia', survival:'Supervivencia',
+      towerdefense:'Tower Defense', turnbased:'Turno por turno',
+      visualnovel:'Novela visual'
     };
+    return map[g] || g;
+  };
     return map[g] || g;
   }
   function multiName(m) {
