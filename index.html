@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>¿Puede mi PC correrlo?</title>
+  <title>¿Qué juegos son compatibles con mi PC?</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <style>
     :root {
@@ -48,7 +48,7 @@
       pointer-events: none;
     }
 
-    /* ── Enlaces superiores (top-left): calendario + compatibilidad ── */
+    /* ── Enlaces superiores (top-left): calendario + buscador ── */
     .nav-links {
       position: absolute;
       top: 1rem;
@@ -246,6 +246,7 @@
       cursor: not-allowed;
     }
     select option { background: #1e1e28; }
+    select option[hidden], select optgroup[hidden] { display: none; }
 
     /* ── Divisor ── */
     hr {
@@ -281,67 +282,6 @@
       transform: none;
     }
     .btn-search:disabled:hover { background: var(--accent); }
-
-    /* ── Buscador de juego con autocompletado ── */
-    .search-field { position: relative; }
-    .search-wrap { position: relative; }
-    #gameSearch {
-      padding-left: 2.4rem;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237070a0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: left 0.85rem center;
-      background-size: 16px;
-    }
-    .suggestions {
-      display: none;
-      position: absolute;
-      z-index: 20;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      max-height: 320px;
-      overflow-y: auto;
-      background: var(--surface2);
-      border: 1px solid var(--border-hover);
-      border-radius: var(--radius);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.45);
-    }
-    .suggestions.open { display: block; }
-    .suggestion-item {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 0.55rem 0.75rem;
-      cursor: pointer;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.1s;
-    }
-    .suggestion-item:last-child { border-bottom: none; }
-    .suggestion-item:hover, .suggestion-item.active {
-      background: var(--accent-dim);
-    }
-    .suggestion-thumb {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      flex-shrink: 0;
-      object-fit: cover;
-    }
-    .suggestion-title {
-      font-size: 0.85rem;
-      color: var(--text);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .suggestion-empty {
-      padding: 0.75rem;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
 
     /* ── Resultados ── */
     #results { margin-top: 1.5rem; }
@@ -539,9 +479,9 @@
       Calendario de lanzamientos
     </a>
     <span class="nav-sep">·</span>
-    <a href="https://varsynn.github.io/juegos-compatibles-con-mi-PC/" class="nav-back" target="_self">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      ¿Qué juego es compatible con mi PC?
+    <a href="https://varsynn.github.io/buscador/" class="nav-back" target="_self">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscador de juegos
     </a>
   </div>
 
@@ -573,9 +513,8 @@
   </div>
 
   <header>
-    <h1>¿Puede mi PC <span>correrlo</span>?</h1>
-    <p>Escribe tu juego y comprueba si tu equipo lo soporta</p>
-
+    <h1>¿Qué juegos son <span>compatibles</span> con mi PC?</h1>
+    <p>Encuentra juegos compatibles con tu hardware en segundos</p>
   </header>
 
   <!-- ── Prefabricados ── -->
@@ -583,14 +522,19 @@
     <p class="section-title">Dispositivo prefabricado</p>
     <div class="prefab-row">
       <label>Elegir dispositivo</label>
-      <select id="prefab" onchange="onPrefab()">
+      <select id="prefab" onchange="onPrefabFamilia()">
         <option value="">— Elige o configura abajo —</option>
-        <option value="steamdeck">Steam Deck (AMD Zen 2 / RDNA 2 / 16 GB / SteamOS)</option>
-        <option value="rogally">ASUS ROG Ally (Ryzen Z1 Extreme / RDNA 3 / 16 GB / Windows 11)</option>
-        <option value="legionGo">Lenovo Legion Go (Ryzen Z1 Extreme / RDNA 3 / 16 GB / Windows 11)</option>
-        <option value="gpd">GPD Win 4 (Ryzen 7840U / RDNA 3 / 16 GB / Windows 11)</option>
+        <option value="steamdeck">Steam Deck</option>
+        <option value="rogally">ASUS ROG Ally</option>
+        <option value="legionGo">Lenovo Legion Go</option>
+        <option value="gpdwin4">GPD Win 4</option>
       </select>
       <span class="or-pill">o configura tú</span>
+    </div>
+    <div class="prefab-row" id="prefabVarianteRow" style="display:none; margin-top:0.6rem;">
+      <label>Modelo / chip</label>
+      <select id="prefabVariante" onchange="onPrefabVariante()">
+      </select>
     </div>
   </div>
 
@@ -639,8 +583,14 @@
             <option value="amd-r9-1">Ryzen 9 (serie 3000-5000)</option>
             <option value="amd-r9-2">Ryzen 9 (serie 7000 o superior)</option>
           </optgroup>
-          <optgroup label="APU portátil (handhelds)">
-            <option value="apu-zen2-deck">APU Zen 2 de handheld (Steam Deck y similares)</option>
+          <optgroup label="APU portátil (handhelds)" data-handheld="1" hidden>
+            <option value="apu-zen2-deck">Zen 2 (Steam Deck y similares)</option>
+            <option value="apu-z1extreme">Ryzen Z1 Extreme (ROG Ally, Legion Go)</option>
+            <option value="apu-z1">Ryzen Z1 — sin "Extreme" (ROG Ally base)</option>
+            <option value="apu-6800u">Ryzen 7 6800U (GPD Win 4)</option>
+            <option value="apu-7840u">Ryzen 7 7840U / 7640U (GPD Win 4)</option>
+            <option value="apu-8840u">Ryzen 7 8840U (GPD Win 4)</option>
+            <option value="apu-hx370">Ryzen AI 9 HX 370 (GPD Win 4)</option>
           </optgroup>
           <optgroup label="CPUs antiguas (pre-Core i / pre-Ryzen)">
             <option value="old-intel-1">Intel Core 2 Duo / Quad, Pentium, Celeron</option>
@@ -710,9 +660,15 @@
             <option value="rx-7900">RX 7900 XT / XTX</option>
             <option value="rx-9070">RX 9060 XT / 9070 (XT)</option>
           </optgroup>
-          <optgroup label="Integrada / portátil">
+          <optgroup label="Integrada (portátil no-gaming)">
             <option value="integrada">Gráfica integrada débil (Intel Iris Xe, AMD básica)</option>
-            <option value="rdna2-apu">GPU integrada RDNA 2/3 (Steam Deck, portátiles AMD APU)</option>
+          </optgroup>
+          <optgroup label="APU portátil (handhelds)" data-handheld="1" hidden>
+            <option value="rdna2-apu">RDNA 2 8CU (Steam Deck)</option>
+            <option value="rdna2-680m">RDNA 2 12CU / Radeon 680M (GPD Win 4 6800U)</option>
+            <option value="rdna3-740m">RDNA 3 4CU / Radeon 740M (ROG Ally Z1 base)</option>
+            <option value="rdna3-780m">RDNA 3 12CU / Radeon 780M (ROG Ally Extreme, Legion Go, GPD Win 4 7840U/7640U/8840U)</option>
+            <option value="rdna35-890m">RDNA 3.5 16CU / Radeon 890M (GPD Win 4 HX 370)</option>
           </optgroup>
           <optgroup label="NVIDIA GeForce (series 400-900, antiguas)">
             <option value="gtx-old-tier1">GTX 460 / 560 / 650 (Ti) / 660 (Ti) / 670 / 680 / 750 / 760 / 770 / 950 / 960 / GT 610-740 / GTS 450 / 8800 GT</option>
@@ -730,35 +686,234 @@
     </div>
   </div>
 
-  <!-- ── Buscador de juego ── -->
+  <!-- ── Filtros opcionales ── -->
   <div class="card">
-    <p class="section-title">Busca tu juego</p>
-    <div class="field search-field">
-      <label>
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Nombre del juego
-      </label>
-      <div class="search-wrap">
-        <input
-          type="text"
-          id="gameSearch"
-          autocomplete="off"
-          placeholder="Cargando juegos..."
-          disabled
-          oninput="onSearchInput()"
-          onfocus="onSearchInput()"
-        />
-        <div id="suggestions" class="suggestions"></div>
+    <p class="section-title">Filtros opcionales</p>
+    <div class="grid4" style="margin-bottom: 0.75rem;">
+      <div class="field">
+        <label>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+          Género 1
+        </label>
+        <select id="genre1">
+          <option value="">Cualquier género</option>
+          <option value="action">Acción</option>
+          <option value="early_access">Acceso anticipado</option>
+          <option value="adventure">Aventura</option>
+          <option value="arpg">ARPG (Acción RPG)</option>
+          <option value="battleroyale">Battle Royale</option>
+          <option value="beatemup">Beat &apos;em Up</option>
+          <option value="casual">Casual</option>
+          <option value="citybuilder">City Builder</option>
+          <option value="extraction">Extraction Shooter</option>
+          <option value="fantasy">Fantasía</option>
+          <option value="fighting">Lucha</option>
+          <option value="fps">FPS</option>
+          <option value="gacha">Gacha</option>
+          <option value="free">Gratis para jugar</option>
+          <option value="horror">Terror</option>
+          <option value="indie">Indie</option>
+          <option value="cardgame">Juego de cartas</option>
+          <option value="jrpg">JRPG</option>
+          <option value="metroidvania">Metroidvania</option>
+          <option value="mmo">MMO</option>
+          <option value="moba">MOBA</option>
+          <option value="openworld">Mundo abierto</option>
+          <option value="platformer">Plataformas</option>
+          <option value="puzzle">Puzle</option>
+          <option value="racing">Carreras</option>
+          <option value="rhythm">Ritmo</option>
+          <option value="roguelite">Roguelite / Roguelike</option>
+          <option value="rpg">RPG</option>
+          <option value="rts">RTS (Estrategia en tiempo real)</option>
+          <option value="sandbox">Sandbox</option>
+          <option value="scifi">Ciencia ficción</option>
+          <option value="stealth">Sigilo</option>
+          <option value="simulation">Simulación</option>
+          <option value="soulslike">Soulslike</option>
+          <option value="sports">Deportes</option>
+          <option value="strategy">Estrategia</option>
+          <option value="survival">Supervivencia</option>
+          <option value="towerdefense">Tower Defense</option>
+          <option value="turnbased">Turno por turno</option>
+          <option value="visualnovel">Novela visual</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+          Género 2
+        </label>
+        <select id="genre2">
+          <option value="">Cualquier género</option>
+          <option value="action">Acción</option>
+          <option value="early_access">Acceso anticipado</option>
+          <option value="adventure">Aventura</option>
+          <option value="arpg">ARPG (Acción RPG)</option>
+          <option value="battleroyale">Battle Royale</option>
+          <option value="beatemup">Beat &apos;em Up</option>
+          <option value="casual">Casual</option>
+          <option value="citybuilder">City Builder</option>
+          <option value="extraction">Extraction Shooter</option>
+          <option value="fantasy">Fantasía</option>
+          <option value="fighting">Lucha</option>
+          <option value="fps">FPS</option>
+          <option value="gacha">Gacha</option>
+          <option value="free">Gratis para jugar</option>
+          <option value="horror">Terror</option>
+          <option value="indie">Indie</option>
+          <option value="cardgame">Juego de cartas</option>
+          <option value="jrpg">JRPG</option>
+          <option value="metroidvania">Metroidvania</option>
+          <option value="mmo">MMO</option>
+          <option value="moba">MOBA</option>
+          <option value="openworld">Mundo abierto</option>
+          <option value="platformer">Plataformas</option>
+          <option value="puzzle">Puzle</option>
+          <option value="racing">Carreras</option>
+          <option value="rhythm">Ritmo</option>
+          <option value="roguelite">Roguelite / Roguelike</option>
+          <option value="rpg">RPG</option>
+          <option value="rts">RTS (Estrategia en tiempo real)</option>
+          <option value="sandbox">Sandbox</option>
+          <option value="scifi">Ciencia ficción</option>
+          <option value="stealth">Sigilo</option>
+          <option value="simulation">Simulación</option>
+          <option value="soulslike">Soulslike</option>
+          <option value="sports">Deportes</option>
+          <option value="strategy">Estrategia</option>
+          <option value="survival">Supervivencia</option>
+          <option value="towerdefense">Tower Defense</option>
+          <option value="turnbased">Turno por turno</option>
+          <option value="visualnovel">Novela visual</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+          Género 3
+        </label>
+        <select id="genre3">
+          <option value="">Cualquier género</option>
+          <option value="action">Acción</option>
+          <option value="early_access">Acceso anticipado</option>
+          <option value="adventure">Aventura</option>
+          <option value="arpg">ARPG (Acción RPG)</option>
+          <option value="battleroyale">Battle Royale</option>
+          <option value="beatemup">Beat &apos;em Up</option>
+          <option value="casual">Casual</option>
+          <option value="citybuilder">City Builder</option>
+          <option value="extraction">Extraction Shooter</option>
+          <option value="fantasy">Fantasía</option>
+          <option value="fighting">Lucha</option>
+          <option value="fps">FPS</option>
+          <option value="gacha">Gacha</option>
+          <option value="free">Gratis para jugar</option>
+          <option value="horror">Terror</option>
+          <option value="indie">Indie</option>
+          <option value="cardgame">Juego de cartas</option>
+          <option value="jrpg">JRPG</option>
+          <option value="metroidvania">Metroidvania</option>
+          <option value="mmo">MMO</option>
+          <option value="moba">MOBA</option>
+          <option value="openworld">Mundo abierto</option>
+          <option value="platformer">Plataformas</option>
+          <option value="puzzle">Puzle</option>
+          <option value="racing">Carreras</option>
+          <option value="rhythm">Ritmo</option>
+          <option value="roguelite">Roguelite / Roguelike</option>
+          <option value="rpg">RPG</option>
+          <option value="rts">RTS (Estrategia en tiempo real)</option>
+          <option value="sandbox">Sandbox</option>
+          <option value="scifi">Ciencia ficción</option>
+          <option value="stealth">Sigilo</option>
+          <option value="simulation">Simulación</option>
+          <option value="soulslike">Soulslike</option>
+          <option value="sports">Deportes</option>
+          <option value="strategy">Estrategia</option>
+          <option value="survival">Supervivencia</option>
+          <option value="towerdefense">Tower Defense</option>
+          <option value="turnbased">Turno por turno</option>
+          <option value="visualnovel">Novela visual</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+          Género 4
+        </label>
+        <select id="genre4">
+          <option value="">Cualquier género</option>
+          <option value="action">Acción</option>
+          <option value="early_access">Acceso anticipado</option>
+          <option value="adventure">Aventura</option>
+          <option value="arpg">ARPG (Acción RPG)</option>
+          <option value="battleroyale">Battle Royale</option>
+          <option value="beatemup">Beat &apos;em Up</option>
+          <option value="casual">Casual</option>
+          <option value="citybuilder">City Builder</option>
+          <option value="extraction">Extraction Shooter</option>
+          <option value="fantasy">Fantasía</option>
+          <option value="fighting">Lucha</option>
+          <option value="fps">FPS</option>
+          <option value="gacha">Gacha</option>
+          <option value="free">Gratis para jugar</option>
+          <option value="horror">Terror</option>
+          <option value="indie">Indie</option>
+          <option value="cardgame">Juego de cartas</option>
+          <option value="jrpg">JRPG</option>
+          <option value="metroidvania">Metroidvania</option>
+          <option value="mmo">MMO</option>
+          <option value="moba">MOBA</option>
+          <option value="openworld">Mundo abierto</option>
+          <option value="platformer">Plataformas</option>
+          <option value="puzzle">Puzle</option>
+          <option value="racing">Carreras</option>
+          <option value="rhythm">Ritmo</option>
+          <option value="roguelite">Roguelite / Roguelike</option>
+          <option value="rpg">RPG</option>
+          <option value="rts">RTS (Estrategia en tiempo real)</option>
+          <option value="sandbox">Sandbox</option>
+          <option value="scifi">Ciencia ficción</option>
+          <option value="stealth">Sigilo</option>
+          <option value="simulation">Simulación</option>
+          <option value="soulslike">Soulslike</option>
+          <option value="sports">Deportes</option>
+          <option value="strategy">Estrategia</option>
+          <option value="survival">Supervivencia</option>
+          <option value="towerdefense">Tower Defense</option>
+          <option value="turnbased">Turno por turno</option>
+          <option value="visualnovel">Novela visual</option>
+        </select>
       </div>
     </div>
 
+    <div class="grid3">
+      <div class="field" style="grid-column: 1 / -1; max-width: 340px;">
+        <label>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Multijugador
+        </label>
+        <select id="multi">
+          <option value="">Indiferente</option>
+          <option value="solo">Solo single-player</option>
+          <option value="pvp">PvP</option>
+          <option value="coop">Cooperativo</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-search" id="btnBuscar" onclick="buscar()" disabled>
+      <svg class="ico" style="width:18px;height:18px;stroke:#fff" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span id="btnBuscarTexto">Cargando juegos...</span>
+    </button>
+
     <p style="font-size:12px;color:#777;text-align:center;margin-top:10px;line-height:1.5;">
-      * Esto es una comprobación orientativa basada en equivalencias de hardware, no una comprobación exacta.
+      * Esto es una búsqueda orientativa basada en equivalencias de hardware, no una comprobación exacta.
       El rendimiento real puede variar según ajustes gráficos, drivers, optimización del juego y otros factores.
       No me hago responsable de que un juego no funcione al 100% como esperabas.
     </p>
   </div>
-
 
   <!-- ── Resultados ── -->
   <div id="results"></div>
@@ -828,21 +983,21 @@
           No se pudo cargar games.json ni progreso.json.<br>
           Comprueba que alguno de los dos archivos está en la misma carpeta que index.html.
         </div>`;
-      // El campo se queda desactivado a propósito: sin datos no hay nada
-      // que buscar, y dejarlo activo solo llevaría a una lista vacía
-      // engañosa en vez de al aviso de arriba.
+      // El botón se queda desactivado a propósito: sin datos no hay nada
+      // que buscar, y dejarlo activo solo llevaría a un resultado vacío
+      // engañoso en vez de al aviso de arriba.
+      $('btnBuscarTexto').textContent = 'Buscar juegos compatibles';
       return;
     }
 
     // Solo ahora GAMES contiene de verdad las dos bases fusionadas —
-    // antes de esto, buscar muy rápido al entrar podía devolver solo lo
-    // que hubiera en games.json, sin los juegos de games_extra.json,
-    // porque cargarJuegos() se lanza sin esperar (fire-and-forget) y una
-    // búsqueda hecha a tiempo se ejecuta contra un GAMES a medio rellenar.
-    const input = $('gameSearch');
-    input.disabled = false;
-    input.placeholder = 'Escribe el nombre de tu juego...';
-    renderCompat(); // muestra el estado inicial "elige un juego"
+    // antes de esto, buscar "moba" muy rápido al entrar podía devolver
+    // solo lo que hubiera en games.json (p.ej. League of Legends) sin
+    // los MOBA de games_extra.json, porque cargarJuegos() se lanza sin
+    // esperar (fire-and-forget) y una búsqueda hecha a tiempo se ejecuta
+    // contra un GAMES todavía a medio rellenar.
+    $('btnBuscarTexto').textContent = 'Buscar juegos compatibles';
+    $('btnBuscar').disabled = false;
   }
   cargarJuegos();
 
@@ -860,6 +1015,7 @@
     'amd-r7-1': 4, 'amd-r7-2': 6,
     'amd-r9-1': 7, 'amd-r9-2': 9,
     'apu-zen2-deck': 4,
+    'apu-z1extreme': 6, 'apu-z1': 5, 'apu-6800u': 5, 'apu-7840u': 6, 'apu-8840u': 6, 'apu-hx370': 7,
     'old-intel-1': 1, 'old-amd-1': 1,
     'generic-dual': 2, 'generic-quad': 3,
   };
@@ -877,17 +1033,38 @@
     'rx-7700': 5, 'rx-7800': 6, 'rx-7900': 8,
     'rx-9070': 6,
     'integrada': 1,
-    'rdna2-apu': 2,
+    'rdna2-apu': 2, 'rdna2-680m': 2, 'rdna3-740m': 1, 'rdna3-780m': 3, 'rdna35-890m': 4,
     'gtx-old-tier1': 1, 'gtx-970': 2, 'gtx-780': 2, 'gtx-980': 3,
     'rx-old-tier1': 1, 'r9-290': 2, 'r9-390': 3,
   };
 
-  /* ── Specs de dispositivos prefabricados (usando las claves del desplegable) ── */
-  const PREFABS = {
-    steamdeck: { cpu:'apu-zen2-deck',  ram:'16', gpu:'rdna2-apu' },
-    rogally:   { cpu:'amd-r7-2',  ram:'16', gpu:'gtx-1650'  },
-    legionGo:  { cpu:'amd-r7-2',  ram:'16', gpu:'gtx-1650'  },
-    gpd:       { cpu:'amd-r7-2',  ram:'16', gpu:'gtx-1650'  },
+  /* ── Specs de dispositivos prefabricados (usando las claves del desplegable) ──
+     Cada familia tiene, o bien un único "spec" (dispositivo con una sola
+     configuración de fábrica posible, como Steam Deck: LCD y OLED comparten
+     el mismo APU Zen 2 / RDNA2 de 8 CU, solo cambia el proceso de fabricación
+     — no el rendimiento), o una lista de "variantes" cuando el fabricante
+     vende de verdad chips distintos bajo el mismo nombre comercial. */
+  const PREFAB_FAMILIAS = {
+    steamdeck: {
+      spec: { cpu: 'apu-zen2-deck', ram: '16', gpu: 'rdna2-apu' },
+    },
+    rogally: {
+      variantes: [
+        { id: 'z1extreme', nombre: 'Z1 Extreme (modelo superior, 8 núcleos / 12 CU)', spec: { cpu: 'apu-z1extreme', ram: '16', gpu: 'rdna3-780m' } },
+        { id: 'z1',        nombre: 'Z1 — sin "Extreme" (modelo base, 6 núcleos / 4 CU)', spec: { cpu: 'apu-z1',        ram: '16', gpu: 'rdna3-740m' } },
+      ],
+    },
+    legionGo: {
+      spec: { cpu: 'apu-z1extreme', ram: '16', gpu: 'rdna3-780m' },
+    },
+    gpdwin4: {
+      variantes: [
+        { id: '6800u', nombre: 'Ryzen 7 6800U',            spec: { cpu: 'apu-6800u', ram: '16', gpu: 'rdna2-680m'  } },
+        { id: '7840u', nombre: 'Ryzen 7 7840U / 7640U',    spec: { cpu: 'apu-7840u', ram: '16', gpu: 'rdna3-780m'  } },
+        { id: '8840u', nombre: 'Ryzen 7 8840U',            spec: { cpu: 'apu-8840u', ram: '16', gpu: 'rdna3-780m'  } },
+        { id: 'hx370', nombre: 'Ryzen AI 9 HX 370',        spec: { cpu: 'apu-hx370', ram: '16', gpu: 'rdna35-890m' } },
+      ],
+    },
   };
 
   /* ── Texto del modal de ayuda (único, cubre CPU + GPU + RAM) ── */
@@ -913,125 +1090,124 @@
   /* ── Helpers ── */
   function $(id) { return document.getElementById(id); }
 
-  function onPrefab() {
-    const val = $('prefab').value;
-    const locked = !!val;
-    ['cpu','ram','gpu'].forEach(id => { $(id).disabled = locked; });
-    if (val && PREFABS[val]) {
-      const p = PREFABS[val];
-      $('cpu').value = p.cpu;
-      $('ram').value = p.ram;
-      $('gpu').value = p.gpu;
+  /* Oculta todas las <option> de un <select> salvo la que coincide con
+     "value", y oculta también cualquier <optgroup> que se quede sin
+     opciones visibles. Así el desplegable queda "limitado" a la única
+     opción posible para el dispositivo elegido, en vez de deshabilitado. */
+  function limitSelectToValue(selectId, value) {
+    const sel = $(selectId);
+    sel.querySelectorAll('option').forEach(opt => {
+      opt.hidden = (opt.value !== value);
+    });
+    sel.querySelectorAll('optgroup').forEach(og => {
+      const visible = Array.from(og.querySelectorAll('option')).some(o => !o.hidden);
+      og.hidden = !visible;
+    });
+    sel.value = value;
+  }
+
+  /* Restaura la lista de opciones "modo PC de sobremesa": se ven todas
+     las opciones normales, pero el grupo de APUs de handheld se mantiene
+     oculto para no confundir a quien está montando un equipo de mesa. */
+  function restoreDesktopOptions(selectId) {
+    const sel = $(selectId);
+    sel.querySelectorAll('option').forEach(opt => { opt.hidden = false; });
+    sel.querySelectorAll('optgroup').forEach(og => { og.hidden = false; });
+    const handheldGroup = sel.querySelector('optgroup[data-handheld]');
+    if (handheldGroup) handheldGroup.hidden = true;
+  }
+
+  function aplicarSpecPrefab(spec) {
+    if (spec) {
+      limitSelectToValue('cpu', spec.cpu);
+      limitSelectToValue('ram', spec.ram);
+      limitSelectToValue('gpu', spec.gpu);
+    } else {
+      restoreDesktopOptions('cpu');
+      restoreDesktopOptions('ram');
+      restoreDesktopOptions('gpu');
+      $('cpu').value = '';
+      $('ram').value = '';
+      $('gpu').value = '';
     }
-    renderCompat();
+  }
+
+  function onPrefabFamilia() {
+    const val = $('prefab').value;
+    const familia = PREFAB_FAMILIAS[val];
+    const filaVariante = $('prefabVarianteRow');
+    const selVariante = $('prefabVariante');
+
+    if (!familia) {
+      // "— Elige o configura abajo —": sin dispositivo, vuelve a modo manual
+      filaVariante.style.display = 'none';
+      selVariante.innerHTML = '';
+      aplicarSpecPrefab(null);
+      return;
+    }
+
+    if (familia.variantes) {
+      // Dispositivo con varios chips reales (p.ej. ROG Ally Z1/Z1 Extreme):
+      // mostramos el segundo desplegable y esperamos a que elija uno.
+      selVariante.innerHTML = '<option value="">— Elige el modelo/chip —</option>' +
+        familia.variantes.map(v => `<option value="${v.id}">${v.nombre}</option>`).join('');
+      filaVariante.style.display = 'flex';
+      aplicarSpecPrefab(null);
+    } else {
+      // Dispositivo con una única configuración de fábrica: se aplica
+      // directamente, sin pedir un segundo paso.
+      filaVariante.style.display = 'none';
+      selVariante.innerHTML = '';
+      aplicarSpecPrefab(familia.spec);
+    }
+  }
+
+  function onPrefabVariante() {
+    const familia = PREFAB_FAMILIAS[$('prefab').value];
+    const variante = familia && familia.variantes && familia.variantes.find(v => v.id === $('prefabVariante').value);
+    aplicarSpecPrefab(variante ? variante.spec : null);
   }
 
   function syncSelects() {
     $('prefab').value = '';
-    ['cpu','ram','gpu'].forEach(id => { $(id).disabled = false; });
-    renderCompat();
+    $('prefabVarianteRow').style.display = 'none';
+    $('prefabVariante').innerHTML = '';
+    restoreDesktopOptions('cpu');
+    restoreDesktopOptions('ram');
+    restoreDesktopOptions('gpu');
   }
 
-  /* ── Buscador de juego con autocompletado ──────────────────────────
-     Filtra GAMES por coincidencia de texto en el título (sin acentos,
-     sin símbolos de marca) a medida que se escribe, y muestra hasta 8
-     sugerencias. Los títulos que EMPIEZAN por lo escrito salen primero
-     (así "Dark Souls" antepone "Dark Souls", "Dark Souls II"... a
-     cualquier otro juego que solo contenga esas palabras en medio). ── */
-  let selectedGame = null;
-  let sugerenciaActiva = -1;
+  /* ── Lógica de búsqueda ── */
+  function buscar() {
+    const cpuKey = $('cpu').value;
+    const gpuKey = $('gpu').value;
+    const cpu  = CPU_TIERS[cpuKey] || 0;
+    const gpu  = GPU_TIERS[gpuKey] || 0;
+    const ram  = parseInt($('ram').value) || 0;
+    const g1   = $('genre1').value;
+    const g2   = $('genre2').value;
+    const g3   = $('genre3').value;
+    const g4   = $('genre4').value;
+    const multi = $('multi').value;
 
-  function normalizarTexto(s) {
-    return (s || '')
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quita acentos
-      .replace(/[™®©]/g, '')
-      .trim();
-  }
+    const nada = !cpuKey && !ram && !gpuKey && !g1 && !g2 && !g3 && !g4 && !multi;
 
-  function buscarSugerencias(query) {
-    const q = normalizarTexto(query);
-    if (!q) return [];
-    return GAMES
-      .filter(g => normalizarTexto(g.title).includes(q))
-      .sort((a, b) => {
-        const an = normalizarTexto(a.title), bn = normalizarTexto(b.title);
-        const aStarts = an.startsWith(q) ? 0 : 1;
-        const bStarts = bn.startsWith(q) ? 0 : 1;
-        if (aStarts !== bStarts) return aStarts - bStarts;
-        return an.length - bn.length;
-      })
-      .slice(0, 8);
-  }
-
-  function onSearchInput() {
-    const query = $('gameSearch').value;
-    const box = $('suggestions');
-    sugerenciaActiva = -1;
-
-    if (!query.trim()) {
-      box.classList.remove('open');
-      box.innerHTML = '';
-      return;
-    }
-
-    const resultados = buscarSugerencias(query);
-    if (resultados.length === 0) {
-      box.innerHTML = `<div class="suggestion-empty">Sin coincidencias — prueba con otro nombre</div>`;
-      box.classList.add('open');
-      return;
-    }
-
-    box.innerHTML = resultados.map((g, i) => `
-      <div class="suggestion-item" data-idx="${i}" onclick="elegirJuego('${g.id}')">
-        <img class="suggestion-thumb" src="${g.thumb}" alt="" onerror="this.style.visibility='hidden'">
-        <span class="suggestion-title">${g.title}</span>
-      </div>`).join('');
-    box.dataset.idsOrden = JSON.stringify(resultados.map(g => g.id));
-    box.classList.add('open');
-  }
-
-  function elegirJuego(id) {
-    // Los id pueden ser numéricos (Steam) o strings (games_extra.json),
-    // por eso se compara sin distinguir tipo.
-    selectedGame = GAMES.find(g => String(g.id) === String(id)) || null;
-    $('gameSearch').value = selectedGame ? selectedGame.title : '';
-    $('suggestions').classList.remove('open');
-    $('suggestions').innerHTML = '';
-    renderCompat();
-  }
-
-  // Cerrar el desplegable al hacer clic fuera
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-field')) {
-      $('suggestions').classList.remove('open');
-    }
-  });
-
-  // Navegación con teclado (flechas + intro) sobre las sugerencias
-  document.addEventListener('DOMContentLoaded', () => {
-    $('gameSearch').addEventListener('keydown', (e) => {
-      const box = $('suggestions');
-      const items = box.querySelectorAll('.suggestion-item');
-      if (!items.length || !box.classList.contains('open')) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        sugerenciaActiva = Math.min(sugerenciaActiva + 1, items.length - 1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        sugerenciaActiva = Math.max(sugerenciaActiva - 1, 0);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (sugerenciaActiva >= 0) items[sugerenciaActiva].click();
-        return;
-      } else {
-        return;
-      }
-      items.forEach((it, i) => it.classList.toggle('active', i === sugerenciaActiva));
-      items[sugerenciaActiva].scrollIntoView({ block: 'nearest' });
+    const found = GAMES.filter(g => {
+      if (cpu   && g.min.cpu > cpu)  return false;
+      if (ram   && g.min.ram > ram)  return false;
+      if (gpu   && g.min.gpu > gpu)  return false;
+      if (g1    && !g.genres.includes(g1))  return false;
+      if (g2    && !g.genres.includes(g2))  return false;
+      if (g3    && !g.genres.includes(g3))  return false;
+      if (g4    && !g.genres.includes(g4))  return false;
+      if (multi === 'solo' && !g.multi.includes('solo')) return false;
+      if (multi === 'pvp'  && !g.multi.includes('pvp'))  return false;
+      if (multi === 'coop' && !g.multi.includes('coop')) return false;
+      return true;
     });
-  });
+
+    renderResults(nada ? GAMES : found, { cpu, ram, gpu });
+  }
 
   /* ── Renderizado ── */
     function genreName(g) {
@@ -1041,7 +1217,7 @@
       cardgame:'Juego de cartas', casual:'Casual',
       citybuilder:'City Builder', early_access:'Acceso anticipado',
       extraction:'Extraction Shooter', fantasy:'Fantasía', fighting:'Lucha',
-      fps:'FPS', gacha:'Gacha', horror:'Terror', indie:'Indie',
+      fps:'FPS', gacha:'Gacha', free:'Gratis para jugar', horror:'Terror', indie:'Indie',
       jrpg:'JRPG', metroidvania:'Metroidvania', mmo:'MMO', moba:'MOBA',
       openworld:'Mundo abierto', platformer:'Plataformas', puzzle:'Puzle',
       racing:'Carreras', rhythm:'Ritmo', roguelite:'Roguelite', rpg:'RPG', rts:'RTS',
@@ -1057,68 +1233,53 @@
     return m === 'solo' ? 'Single-player' : m === 'pvp' ? 'PvP' : 'Co-op';
   }
 
-  function renderCompat() {
+  function renderResults(list, specs) {
     const el = $('results');
-
-    if (!selectedGame) {
+    if (list.length === 0) {
       el.innerHTML = `
         <div class="empty">
-          <span class="icon">🔍</span>
-          Escribe el nombre de un juego arriba para comprobar si tu equipo lo puede mover.
+          <span class="icon">🎮</span>
+          Sin resultados con esos filtros.<br>
+          Prueba a ampliar los requisitos o quita algún filtro.
         </div>`;
       return;
     }
+    const header = `<p class="results-header">${list.length} juego${list.length !== 1 ? 's' : ''} compatible${list.length !== 1 ? 's' : ''}</p>`;
+    const cards = list.map(g => {
+      const genres = (g.genres || []).map(x => `<span class="tag tag-genre">${genreName(x)}</span>`).join('');
+      const multis = (g.multi  || []).map(x => `<span class="tag tag-multi">${multiName(x)}</span>`).join('');
 
-    const g = selectedGame;
-    const cpuKey = $('cpu').value;
-    const gpuKey = $('gpu').value;
-    const cpu = CPU_TIERS[cpuKey] || 0;
-    const gpu = GPU_TIERS[gpuKey] || 0;
-    const ram = parseInt($('ram').value) || 0;
-    const hayHardware = !!(cpuKey || ram || gpuKey);
+      let compatTags = '';
+      if (specs && (specs.cpu || specs.ram || specs.gpu)) {
+        const cumpleRec =
+          (!specs.cpu || g.rec.cpu <= specs.cpu) &&
+          (!specs.ram || g.rec.ram <= specs.ram) &&
+          (!specs.gpu || g.rec.gpu <= specs.gpu);
+        compatTags =
+          `<span class="tag tag-compat">✓ Mínimos</span>` +
+          (cumpleRec
+            ? `<span class="tag tag-compat">✓ Recomendados</span>`
+            : `<span class="tag tag-fail">✗ Recomendados</span>`);
+      }
 
-    const genres = (g.genres || []).map(x => `<span class="tag tag-genre">${genreName(x)}</span>`).join('');
-    const multis = (g.multi  || []).map(x => `<span class="tag tag-multi">${multiName(x)}</span>`).join('');
-
-    // A diferencia del buscador por filtros, aquí el juego NO viene
-    // pre-filtrado por mínimos — puede que ni los cumpla — así que
-    // comprobamos mínimos y recomendados de verdad, no solo recomendados.
-    let compatTags = `<span class="tag" style="opacity:.7">Elige tu hardware arriba para comprobar compatibilidad</span>`;
-    if (hayHardware) {
-      const cumpleMin =
-        (!cpu || g.min.cpu <= cpu) &&
-        (!ram || g.min.ram <= ram) &&
-        (!gpu || g.min.gpu <= gpu);
-      const cumpleRec =
-        (!cpu || g.rec.cpu <= cpu) &&
-        (!ram || g.rec.ram <= ram) &&
-        (!gpu || g.rec.gpu <= gpu);
-      compatTags =
-        (cumpleMin
-          ? `<span class="tag tag-compat">✓ Mínimos</span>`
-          : `<span class="tag tag-fail">✗ Mínimos</span>`) +
-        (cumpleRec
-          ? `<span class="tag tag-compat">✓ Recomendados</span>`
-          : `<span class="tag tag-fail">✗ Recomendados</span>`);
-    }
-
-    el.innerHTML = `
-      <p class="results-header">Resultado de compatibilidad</p>
-      <div class="game-card">
-        <div class="game-thumb"><img src="${g.thumb}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'"></div>
-        <div class="game-body">
-          <a class="game-title" href="${g.url}" target="_blank" rel="noopener noreferrer">${g.title} <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0.6;vertical-align:middle" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
-          <p class="game-desc">${g.desc}</p>
-          <div class="tags">
-            ${genres}${multis}
-            ${compatTags}
+      return `
+        <div class="game-card">
+          <div class="game-thumb"><img src="${g.thumb}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'"></div>
+          <div class="game-body">
+            <a class="game-title" href="${g.url}" target="_blank" rel="noopener noreferrer">${g.title} <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0.6;vertical-align:middle" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <p class="game-desc">${g.desc}</p>
+            <div class="tags">
+              ${genres}${multis}
+              ${compatTags}
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
+    }).join('');
+    el.innerHTML = header + cards;
   }
 
-  // Contador de visitas — namespace propio "buscador", independiente de /hardware y /calendario
-  fetch('https://api.counterapi.dev/v1/ofertasspeedrun/buscador/up')
+  // Contador de visitas — namespace propio para no mezclar con /calendario
+  fetch('https://api.counterapi.dev/v1/ofertasspeedrun/hardware/up')
     .then(res => res.json())
     .then(data => {
       const val = data.count ?? data.value ?? null;
@@ -1133,7 +1294,7 @@
   function sharePage() {
     const url = window.location.href;
     if (navigator.share) {
-      navigator.share({ title: '¿Puede mi PC correrlo? – ofertasspeedrun', url: url }).catch(() => {});
+      navigator.share({ title: '¿Qué juegos son compatibles con mi PC? – ofertasspeedrun', url: url }).catch(() => {});
     } else {
       navigator.clipboard.writeText(url).then(() => { alert('Enlace copiado al portapapeles'); });
     }
