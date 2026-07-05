@@ -365,6 +365,86 @@
     }
     .game-card:hover { border-color: var(--border-hover); }
 
+    /* ── Botones de acción (burbuja de comentarios) ── */
+    .card-actions {
+      position: absolute;
+      top: 10px; right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+    }
+    .btn-star, .btn-bubble {
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; line-height: 1; padding: 2px 4px;
+      border-radius: 6px; transition: background 0.15s, transform 0.1s;
+    }
+    .btn-bubble { color: #666; font-size: 15px; }
+    .btn-bubble:hover { background: rgba(255,255,255,0.06); color: #aaa; transform: scale(1.1); }
+
+    /* ── Panel de comentarios ── */
+    .comment-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 900;
+    }
+    .comment-panel {
+      position: fixed; top: 0; right: -460px; width: 420px;
+      max-width: 100vw; height: 100vh;
+      background: #18181b; border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transition: right 0.28s cubic-bezier(.4,0,.2,1);
+      z-index: 1000; overflow: hidden;
+    }
+    .comment-panel.open { right: 0; }
+    .cp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.2rem; border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cp-header h3 { font-size: 0.95rem; font-weight: 600; color: #fff; margin: 0; }
+    .cp-close {
+      background: none; border: none; color: #666; font-size: 18px;
+      cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: color 0.15s;
+    }
+    .cp-close:hover { color: #fff; }
+    .cp-list {
+      flex: 1; overflow-y: auto; padding: 0.8rem 1.2rem;
+      display: flex; flex-direction: column; gap: 0.65rem;
+    }
+    .cp-list::-webkit-scrollbar { width: 4px; }
+    .cp-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .cp-empty { color: #555; font-size: 0.85rem; text-align: center; padding: 2rem 0; }
+    .cp-loading { color: #555; font-size: 0.85rem; text-align: center; padding: 1rem 0; }
+    .cp-comment {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.7rem 0.9rem;
+      font-size: 0.83rem; color: #ccc; line-height: 1.5;
+      position: relative;
+    }
+    .cp-comment .cp-meta {
+      font-size: 0.72rem; color: #555; margin-top: 0.35rem;
+    }
+    .cp-form {
+      padding: 0.8rem 1.2rem; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0;
+    }
+    .cp-form textarea {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: #ccc; font-size: 0.83rem;
+      padding: 0.55rem 0.75rem; resize: vertical; min-height: 70px;
+      font-family: inherit; outline: none; transition: border-color 0.15s;
+    }
+    .cp-form textarea:focus { border-color: var(--accent); }
+    .cp-form textarea::placeholder { color: #444; }
+    .cp-send {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.83rem;
+      font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+      align-self: flex-end;
+    }
+    .cp-send:hover { opacity: 0.85; }
+    .cp-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
     .game-thumb {
       width: 54px;
       height: 54px;
@@ -1215,6 +1295,9 @@
     el.innerHTML = `
       <p class="results-header">Resultado de compatibilidad</p>
       <div class="game-card">
+        <div class="card-actions">
+          <button class="btn-bubble" onclick="openComments('${String(g.id)}','${(g.title||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" title="Ver comentarios de usuarios">💬</button>
+        </div>
         <div class="game-thumb"><img src="${g.thumb}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'"></div>
         <div class="game-body">
           <a class="game-title" href="${g.url}" target="_blank" rel="noopener noreferrer">${g.title} <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0.6;vertical-align:middle" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
@@ -1367,7 +1450,116 @@ function closeCookieBanner() {
   document.getElementById('cookie-banner').style.display = 'none';
   document.getElementById('cookie-modal').classList.remove('open');
 }
+
+  // ════════════════════════════════════════════════════════
+  // COMENTARIOS — Supabase
+  // Misma tabla que /hardware para que los comentarios sean
+  // compartidos entre ambas webs.
+  //
+  // Para BORRAR comentarios: entra en https://supabase.com
+  // → Tu proyecto → Table Editor → tabla "comentarios"
+  // y borra la fila directamente desde el dashboard.
+  // ════════════════════════════════════════════════════════
+  const SUPA_URL  = 'https://uqvyjgtdcgbznnvcwwit.supabase.co';
+  const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxdnlqZ3RkY2diem5udmN3d2l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNjgyMjQsImV4cCI6MjA5ODc0NDIyNH0.195aki7blYw8VOFzQN2iSLpDvirxloNPR6_HZ28VQJw';         // ← Publishable key
+
+  let currentGameId = null;
+
+  function openComments(gameId, gameTitle) {
+    currentGameId = gameId;
+    document.getElementById('cpTitle').textContent = gameTitle;
+    document.getElementById('cpText').value = '';
+    document.getElementById('commentPanel').classList.add('open');
+    document.getElementById('commentOverlay').style.display = 'block';
+    loadComments(gameId);
+  }
+
+  function closeComments() {
+    document.getElementById('commentPanel').classList.remove('open');
+    document.getElementById('commentOverlay').style.display = 'none';
+    currentGameId = null;
+  }
+
+  async function loadComments(gameId) {
+    const list = document.getElementById('cpList');
+    list.innerHTML = '<p class="cp-loading">Cargando…</p>';
+    try {
+      const res = await fetch(
+        `${SUPA_URL}/rest/v1/comentarios?game_id=eq.${encodeURIComponent(gameId)}&order=fecha.desc`,
+        { headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${SUPA_ANON}` } }
+      );
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      if (!data.length) {
+        list.innerHTML = '<p class="cp-empty">Aún no hay comentarios.<br>¡Sé el primero en compartir tu experiencia!</p>';
+        return;
+      }
+      list.innerHTML = data.map(c => `
+        <div class="cp-comment">
+          ${escapeHtml(c.texto)}
+          <div class="cp-meta">Anónimo · ${formatDate(c.fecha)}</div>
+        </div>`).join('');
+    } catch (e) {
+      list.innerHTML = '<p class="cp-empty">Error al cargar comentarios.<br>Comprueba la configuración de Supabase.</p>';
+    }
+  }
+
+  async function submitComment() {
+    const texto = document.getElementById('cpText').value.trim();
+    if (!texto || !currentGameId) return;
+    const btn = document.getElementById('cpSend');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    try {
+      const res = await fetch(`${SUPA_URL}/rest/v1/comentarios`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_ANON, 'Authorization': `Bearer ${SUPA_ANON}`,
+          'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          game_id: String(currentGameId),
+          game_title: document.getElementById('cpTitle').textContent,
+          texto
+        })
+      });
+      if (!res.ok) throw new Error(res.status);
+      document.getElementById('cpText').value = '';
+      await loadComments(currentGameId);
+    } catch (e) {
+      alert('Error al enviar el comentario. Inténtalo de nuevo.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar';
+    }
+  }
+
+  function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeComments(); });
+
 </script>
+<!-- ── Overlay y panel de comentarios ── -->
+<div class="comment-overlay" id="commentOverlay" onclick="closeComments()"></div>
+<div class="comment-panel" id="commentPanel">
+  <div class="cp-header">
+    <h3 id="cpTitle">Comentarios</h3>
+    <button class="cp-close" onclick="closeComments()">✕</button>
+  </div>
+  <div class="cp-list" id="cpList">
+    <p class="cp-loading">Cargando...</p>
+  </div>
+  <div class="cp-form">
+    <textarea id="cpText" maxlength="600" placeholder="Comparte tu experiencia con este juego (máx. 600 caracteres)…"></textarea>
+    <button class="cp-send" id="cpSend" onclick="submitComment()">Enviar</button>
+  </div>
+</div>
 
 </body>
 </html>
